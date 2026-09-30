@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}DBMS Audit Logs | CinePass Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <span class="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-50 px-3 py-1 rounded-pill mb-2">
+                <i class="fa-solid fa-bolt me-1"></i> Trigger Powered
+            </span>
+            <h3 class="fw-bold font-brand text-light m-0">DBMS Audit Logs (Table: <code>audit_logs</code>)</h3>
+            <p class="text-muted small m-0">Populated automatically via MySQL triggers on <code>bookings</code> table INSERT and UPDATE events</p>
+        </div>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-light btn-sm rounded-pill px-3">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Trigger explanation box -->
+    <div class="card bg-card border-secondary border-opacity-25 rounded-4 p-4 mb-4 shadow-sm">
+        <h6 class="fw-bold text-light font-brand mb-2"><i class="fa-solid fa-code text-danger me-2"></i>Active MySQL Database Triggers</h6>
+        <div class="row g-3 small">
+            <div class="col-md-6">
+                <div class="p-3 bg-dark rounded-3 border border-secondary border-opacity-25">
+                    <strong class="text-warning">1. trg_after_booking_insert (AFTER INSERT ON bookings)</strong>
+                    <p class="text-muted font-xs m-0 mt-1">Fires immediately when a user confirms a booking; automatically inserts a timestamped record with reference code and amount into <code>audit_logs</code>.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="p-3 bg-dark rounded-3 border border-secondary border-opacity-25">
+                    <strong class="text-info">2. trg_after_booking_update (AFTER UPDATE ON bookings)</strong>
+                    <p class="text-muted font-xs m-0 mt-1">Fires when booking status transitions to <code>CANCELLED</code>; triggers an automatic update to <code>payments.status = 'REFUNDED'</code> and writes cancellation details to <code>audit_logs</code>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table of logs -->
+    <div class="card bg-card border-secondary border-opacity-25 rounded-4 p-4 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle m-0 small">
+                <thead>
+                    <tr class="text-muted font-xs text-uppercase">
+                        <th>Log ID</th>
+                        <th>Action Type</th>
+                        <th>Table</th>
+                        <th>Record ID</th>
+                        <th>Audit Details</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for l in logs %}
+                    <tr>
+                        <td class="text-muted font-xs">#{{ l.log_id }}</td>
+                        <td>
+                            <span class="badge {% if 'CANCEL' in l.action_type %}bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50{% else %}bg-success bg-opacity-25 text-success border border-success border-opacity-50{% endif %} rounded-pill px-2 py-1 font-xs font-brand">
+                                {{ l.action_type }}
+                            </span>
+                        </td>
+                        <td><code>{{ l.table_name }}</code></td>
+                        <td>#{{ l.record_id }}</td>
+                        <td class="text-light">{{ l.details }}</td>
+                        <td class="text-muted font-xs">{{ l.created_at }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">No audit logs recorded yet. Create or cancel a booking to see triggers fire in real-time!</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

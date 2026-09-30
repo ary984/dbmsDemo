@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}PVR INOX - Discover & Book Movie Tickets | IMAX, 4DX & LUXE{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- PVR Blockbuster Spotlight Hero Banner -->
+    <div class="pvr-spotlight p-4 p-md-5 mb-5">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <span class="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-50 px-3 py-1 rounded-pill font-xs fw-bold">
+                        <i class="fa-solid fa-crown me-1"></i> PVR PREMIERE & IMAX
+                    </span>
+                    <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50 px-3 py-1 rounded-pill font-xs fw-bold">
+                        NOW SHOWING
+                    </span>
+                </div>
+                
+                <h1 class="display-4 fw-extrabold text-light mb-3 font-brand">
+                    Experience Cinema <br><span class="pvr-brand-text">Beyond Imagination</span>
+                </h1>
+                <p class="lead text-muted mb-4 fs-6">
+                    Immerse yourself in crystal-clear laser projection, IMAX 12-channel audio, 4DX sensory motion, and plush recliner dining.
+                </p>
+                
+                <!-- Cinema Movie Search Bar -->
+                <form action="{{ url_for('customer.index') }}" method="GET" class="d-flex gap-2 mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-secondary border-opacity-50 text-muted"><i class="fa-solid fa-magnifying-glass text-warning"></i></span>
+                        <input type="text" name="q" value="{{ search_query }}" class="form-control form-control-lg bg-dark text-light border-secondary border-opacity-50" placeholder="Search by movie title, actor, or genre...">
+                    </div>
+                    <button type="submit" class="btn btn-gold btn-lg px-4 font-brand fw-bold">Find Shows</button>
+                </form>
+
+                <div class="d-flex flex-wrap gap-2 small text-muted">
+                    <span class="text-secondary">Trending:</span>
+                    <a href="{{ url_for('customer.index', q='Sci-Fi') }}" class="text-muted text-decoration-none hover-gold">#Sci-Fi</a>
+                    <a href="{{ url_for('customer.index', q='Action') }}" class="text-muted text-decoration-none hover-gold">#Action</a>
+                    <a href="{{ url_for('customer.index', q='IMAX') }}" class="text-muted text-decoration-none hover-gold">#IMAX3D</a>
+                </div>
+            </div>
+
+            <!-- Right Showcase: PVR Experience Highlights -->
+            <div class="col-lg-5 d-none d-lg-block">
+                <div class="p-4 rounded-4 bg-dark bg-opacity-75 border border-warning border-opacity-25 shadow-2xl">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="text-warning fw-bold m-0 font-brand"><i class="fa-solid fa-sparkles me-2"></i>PVR LUXURY FORMATS</h6>
+                        <span class="badge bg-warning text-dark font-xs fw-bold">EXCLUSIVE</span>
+                    </div>
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex align-items-center gap-3 p-2 rounded-3 bg-black bg-opacity-40 border border-secondary border-opacity-25">
+                            <div class="pvr-avatar-badge text-warning"><i class="fa-solid fa-film"></i></div>
+                            <div>
+                                <div class="fw-bold text-light small">IMAX with Laser</div>
+                                <div class="font-xs text-muted">Next-gen 4K laser projection & 12-channel sound</div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-3 p-2 rounded-3 bg-black bg-opacity-40 border border-secondary border-opacity-25">
+                            <div class="pvr-avatar-badge text-danger"><i class="fa-solid fa-wind"></i></div>
+                            <div>
+                                <div class="fw-bold text-light small">4DX Motion & Effects</div>
+                                <div class="font-xs text-muted">Synchronized motion seats, wind, rain & scents</div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-3 p-2 rounded-3 bg-black bg-opacity-40 border border-secondary border-opacity-25">
+                            <div class="pvr-avatar-badge text-warning"><i class="fa-solid fa-couch"></i></div>
+                            <div>
+                                <div class="fw-bold text-light small">PVR LUXE Recliners</div>
+                                <div class="font-xs text-muted">Full motorized leather recliners & chef dining</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PVR Formats & Quick Filters -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <!-- Genre Filter Bar -->
+        <div class="d-flex align-items-center gap-2 overflow-x-auto pb-2">
+            <span class="text-muted small me-1 text-nowrap"><i class="fa-solid fa-sliders me-1 text-warning"></i> Filter:</span>
+            <a href="{{ url_for('customer.index', q=search_query) }}" class="btn btn-sm rounded-pill px-3 {% if not selected_genre %}btn-gold fw-bold{% else %}btn-outline-secondary{% endif %}">
+                All Movies
+            </a>
+            {% for g in genres %}
+            <a href="{{ url_for('customer.index', genre=g, q=search_query) }}" class="btn btn-sm rounded-pill px-3 {% if selected_genre == g %}btn-gold fw-bold{% else %}btn-outline-secondary{% endif %}">
+                {{ g }}
+            </a>
+            {% endfor %}
+        </div>
+
+        <div class="text-muted small">
+            <span>Showing <strong class="text-warning">{{ movies|length }}</strong> Blockbusters</span>
+        </div>
+    </div>
+
+    <!-- Movies Grid -->
+    {% if movies %}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-5">
+        {% for movie in movies %}
+        <div class="col">
+            <div class="card h-100 movie-card text-light">
+                <div class="movie-poster-wrap">
+                    <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="movie-poster" onerror="this.src='https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=600&q=80'">
+                    <span class="rating-badge">
+                        <i class="fa-solid fa-star text-warning me-1"></i>{{ movie.rating }}
+                    </span>
+                    <span class="format-pill">
+                        2D • 3D • IMAX
+                    </span>
+                </div>
+                <div class="card-body d-flex flex-column justify-content-between p-3">
+                    <div>
+                        <h5 class="card-title fw-bold text-truncate mb-1 font-brand text-light" title="{{ movie.title }}">{{ movie.title }}</h5>
+                        <p class="text-muted small mb-2"><span class="badge bg-dark border border-secondary text-secondary me-1 font-xs">U/A</span> {{ movie.genre }}</p>
+                        <div class="d-flex gap-2 text-muted small mb-3">
+                            <span><i class="fa-regular fa-clock me-1 text-warning"></i>{{ movie.duration_mins }}m</span>
+                            <span>•</span>
+                            <span><i class="fa-solid fa-language me-1 text-info"></i>{{ movie.language }}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('customer.movie_detail', movie_id=movie.movie_id) }}" class="btn btn-danger w-100 rounded-pill fw-bold py-2 shadow">
+                            <i class="fa-solid fa-ticket me-1"></i> Book Tickets
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5 bg-card rounded-4 border border-secondary border-opacity-25 p-5 mb-5">
+        <i class="fa-solid fa-film fs-1 text-warning mb-3"></i>
+        <h4 class="text-light font-brand">No Movies Found</h4>
+        <p class="text-muted">No scheduled movies matching your search query or genre filter.</p>
+        <a href="{{ url_for('customer.index') }}" class="btn btn-gold rounded-pill px-4 fw-bold">View All Movies</a>
+    </div>
+    {% endif %}
+
+    <!-- PVR Experiences Section -->
+    <div id="experiences" class="pt-4 mb-5">
+        <div class="text-center mb-4">
+            <span class="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-50 px-3 py-1 rounded-pill font-xs fw-bold mb-2">
+                DISCOVER THE MAGIC
+            </span>
+            <h2 class="fw-bold font-brand text-light">World-Class Cinema Experiences</h2>
+            <p class="text-muted small">Choose your preferred way of experiencing cinema at PVR INOX</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="p-4 rounded-4 bg-card border border-secondary border-opacity-25 h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="pvr-brand-text fs-4">IMAX</span>
+                        <i class="fa-solid fa-film text-warning fs-3"></i>
+                    </div>
+                    <h5 class="fw-bold text-light mb-2">IMAX with Laser</h5>
+                    <p class="text-muted small">Massive floor-to-ceiling screens, crystal clear laser sharpness, and 12-channel spatial immersion audio.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 rounded-4 bg-card border border-secondary border-opacity-25 h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="pvr-brand-text fs-4">4DX</span>
+                        <i class="fa-solid fa-wind text-danger fs-3"></i>
+                    </div>
+                    <h5 class="fw-bold text-light mb-2">4DX Dynamic Cinema</h5>
+                    <p class="text-muted small">Motion synchronized high-tech seats paired with dynamic environmental effects including wind, fog, lightning, and scents.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 rounded-4 bg-card border border-secondary border-opacity-25 h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="pvr-brand-text fs-4">LUXE</span>
+                        <i class="fa-solid fa-couch text-warning fs-3"></i>
+                    </div>
+                    <h5 class="fw-bold text-light mb-2">PVR LUXE Loungers</h5>
+                    <p class="text-muted small">Plush motorized leather recliners, exclusive VIP lounge access, and bespoke gourmet dining served right at your seat.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- F&B Snack Spotlight -->
+    <div id="fnb" class="p-4 p-md-5 rounded-4 bg-card border border-warning border-opacity-25 mb-4">
+        <div class="row align-items-center g-4">
+            <div class="col-md-8">
+                <span class="badge bg-warning text-dark font-xs fw-bold px-3 py-1 rounded-pill mb-2">GOURMET SNACKS</span>
+                <h3 class="fw-bold font-brand text-light mb-2">PVR Gourmet Cinema Dining</h3>
+                <p class="text-muted small mb-0">Pre-book freshly popped golden butter popcorn, loaded nachos, artisanal burgers, and refreshing beverages with zero waiting time at the counter.</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="#fnb" class="btn btn-outline-warning rounded-pill px-4 fw-bold">
+                    <i class="fa-solid fa-burger me-2"></i> Explore Menu
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

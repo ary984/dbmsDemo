@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard | CinePass{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <span class="badge bg-info bg-opacity-25 text-info border border-info border-opacity-50 px-3 py-1 rounded-pill mb-2">
+                <i class="fa-solid fa-gauge me-1"></i> Management Console
+            </span>
+            <h2 class="fw-bold font-brand text-light m-0">Administrator Overview</h2>
+            <p class="text-muted small m-0">System metrics, multiplex analytics, and recent reservations</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('admin.movies_list') }}" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                <i class="fa-solid fa-film me-1"></i> Movies
+            </a>
+            <a href="{{ url_for('admin.shows_list') }}" class="btn btn-danger btn-sm rounded-pill px-3 fw-semibold">
+                <i class="fa-solid fa-calendar-plus me-1"></i> Schedule Show
+            </a>
+            <a href="{{ url_for('admin.audit_logs') }}" class="btn btn-outline-warning btn-sm rounded-pill px-3">
+                <i class="fa-solid fa-shield-halved me-1"></i> Trigger Audits
+            </a>
+        </div>
+    </div>
+
+    <!-- Metric Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card bg-card border-secondary border-opacity-25 rounded-4 p-3 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted font-xs text-uppercase fw-bold">Active Movies</span>
+                        <h3 class="fw-bold text-light m-0 mt-1 font-brand">{{ stats.total_movies }}</h3>
+                    </div>
+                    <div class="p-3 bg-danger bg-opacity-20 text-danger rounded-circle">
+                        <i class="fa-solid fa-film fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card bg-card border-secondary border-opacity-25 rounded-4 p-3 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted font-xs text-uppercase fw-bold">Upcoming Shows</span>
+                        <h3 class="fw-bold text-warning m-0 mt-1 font-brand">{{ stats.total_shows }}</h3>
+                    </div>
+                    <div class="p-3 bg-warning bg-opacity-20 text-warning rounded-circle">
+                        <i class="fa-solid fa-calendar-days fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card bg-card border-secondary border-opacity-25 rounded-4 p-3 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted font-xs text-uppercase fw-bold">Confirmed Bookings</span>
+                        <h3 class="fw-bold text-info m-0 mt-1 font-brand">{{ stats.total_bookings }}</h3>
+                    </div>
+                    <div class="p-3 bg-info bg-opacity-20 text-info rounded-circle">
+                        <i class="fa-solid fa-ticket fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card bg-card border-secondary border-opacity-25 rounded-4 p-3 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted font-xs text-uppercase fw-bold">Gross Revenue</span>
+                        <h3 class="fw-bold text-success m-0 mt-1 font-brand">${{ stats.total_revenue }}</h3>
+                    </div>
+                    <div class="p-3 bg-success bg-opacity-20 text-success rounded-circle">
+                        <i class="fa-solid fa-hand-holding-dollar fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revenue Analytics View Showcase -->
+    <div class="card bg-card border-secondary border-opacity-25 rounded-4 p-4 mb-4 shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h5 class="fw-bold text-light m-0 font-brand"><i class="fa-solid fa-chart-pie text-danger me-2"></i>Multiplex Revenue Breakdown (SQL View: <code>vw_cinema_revenue</code>)</h5>
+                <p class="text-muted small m-0">Live aggregated metrics generated across Cinema, Screen, Shows, and Booking_Seats joins</p>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle m-0 small">
+                <thead>
+                    <tr class="text-muted font-xs text-uppercase">
+                        <th>Cinema</th>
+                        <th>City</th>
+                        <th>Movie Title</th>
+                        <th class="text-center">Total Bookings</th>
+                        <th class="text-center">Tickets Sold</th>
+                        <th class="text-end">Revenue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in revenue_by_cinema %}
+                    <tr>
+                        <td class="fw-bold text-light">{{ r.cinema_name }}</td>
+                        <td>{{ r.city }}</td>
+                        <td><span class="badge bg-dark border border-secondary text-warning">{{ r.movie_title }}</span></td>
+                        <td class="text-center">{{ r.total_bookings }}</td>
+                        <td class="text-center">{{ r.total_tickets_sold }}</td>
+                        <td class="text-end fw-bold text-success font-brand">${{ r.gross_revenue }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-3">No revenue transactions recorded yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent Bookings Table -->
+    <div class="card bg-card border-secondary border-opacity-25 rounded-4 p-4 shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold text-light m-0 font-brand"><i class="fa-solid fa-list-check text-info me-2"></i>Recent System Bookings</h5>
+            <span class="text-muted small">Fetched from <code>vw_booking_details</code></span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle m-0 small">
+                <thead>
+                    <tr class="text-muted font-xs text-uppercase">
+                        <th>Ref #</th>
+                        <th>Customer</th>
+                        <th>Movie</th>
+                        <th>Cinema & Screen</th>
+                        <th>Seats</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in recent_bookings %}
+                    <tr>
+                        <td><strong class="text-danger font-brand">{{ b.booking_reference }}</strong></td>
+                        <td>
+                            <div class="fw-bold text-light">{{ b.customer_name }}</div>
+                            <div class="font-xs text-muted">{{ b.customer_email }}</div>
+                        </td>
+                        <td>{{ b.movie_title }}</td>
+                        <td>{{ b.cinema_name }} - {{ b.screen_name }}</td>
+                        <td><span class="badge bg-dark border border-secondary text-warning">{{ b.booked_seat_numbers }}</span></td>
+                        <td class="fw-bold text-success">${{ b.total_amount }}</td>
+                        <td>
+                            <span class="badge {% if b.booking_status == 'CONFIRMED' %}bg-success bg-opacity-25 text-success{% else %}bg-danger bg-opacity-25 text-danger{% endif %} rounded-pill px-2 py-1 font-xs">
+                                {{ b.booking_status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-3">No bookings placed yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

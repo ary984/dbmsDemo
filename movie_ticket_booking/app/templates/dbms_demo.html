@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block title %}DBMS Lab & Viva Presentation | CinePass{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <span class="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-50 px-3 py-1 rounded-pill mb-2">
+                <i class="fa-solid fa-graduation-cap me-1"></i> Academic Project Demonstration
+            </span>
+            <h2 class="fw-bold font-brand text-light m-0">DBMS Implementation & Viva Lab</h2>
+            <p class="text-muted small m-0">Comprehensive showcase of Normalization (3NF), Views, Procedures, Triggers, and ACID Concurrency</p>
+        </div>
+        <div>
+            <a href="#viva-section" class="btn btn-outline-warning btn-sm rounded-pill px-3">
+                <i class="fa-solid fa-book-open me-1"></i> Viva Questions & Answers
+            </a>
+        </div>
+    </div>
+
+    <!-- Live Database Schema Metrics -->
+    <div class="card bg-card border-secondary border-opacity-25 rounded-4 p-4 mb-4 shadow-sm">
+        <h5 class="fw-bold text-light font-brand mb-3">
+            <i class="fa-solid fa-table-cells text-danger me-2"></i>Database Tables & Current Record Counts (3NF Normalized)
+        </h5>
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 g-2">
+            {% for t in tables_counts %}
+            <div class="col">
+                <div class="p-3 bg-dark rounded-3 border border-secondary border-opacity-25 text-center">
+                    <span class="font-xs text-muted text-uppercase d-block">{{ t.tbl }}</span>
+                    <span class="fs-4 fw-bold text-light font-brand">{{ t.count }}</span>
+                    <span class="font-xs text-muted d-block">rows</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Live Concurrency Simulator (Double-Booking Prevention) -->
+    <div class="card bg-card border-secondary border-opacity-25 rounded-4 p-4 mb-4 shadow-sm">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+            <div>
+                <h5 class="fw-bold text-light font-brand m-0">
+                    <i class="fa-solid fa-arrows-split-up-and-left text-danger me-2"></i>ACID Concurrency Simulator (Race Condition Test)
+                </h5>
+                <p class="text-muted small m-0">Simulates two users simultaneously attempting to book the EXACT same seat in parallel threads</p>
+            </div>
+            <button id="btnRunConcurrency" class="btn btn-danger rounded-pill px-4 fw-semibold font-brand shadow">
+                <i class="fa-solid fa-play me-1"></i> Run Live Concurrency Test
+            </button>
+        </div>
+
+        <div id="concurrencyOutput" class="p-3 bg-dark rounded-3 border border-secondary border-opacity-25 small font-monospace text-light" style="min-height: 80px;">
+            Click the "Run Live Concurrency Test" button above to fire concurrent parallel database transactions and observe row-level locking with <code>SELECT ... FOR UPDATE</code>.
+        </div>
+    </div>
+
+    <!-- Views, Procedures, Triggers Inspector -->
+    <div class="row g-4 mb-4">
+        <!-- Views -->
+        <div class="col-lg-4">
+            <div class="card bg-card border-secondary border-opacity-25 rounded-4 p-4 h-100 shadow-sm">
+                <h6 class="fw-bold text-light font-brand mb-3">
+                    <i class="fa-solid fa-eye text-warning me-2"></i>SQL Views ({{ views|length }})
+                </h6>
+                <div class="d-flex flex-column gap-2 small">
+                    <div class="p-2 bg-dark rounded border border-secondary border-opacity-25">
+                        <strong class="text-warning">vw_active_shows</strong>
+                        <div class="font-xs text-muted">Aggregates movie, cinema, screen info with real-time remaining seat count calculation.</div>
+                    </div>
+                    <div class="p-2 bg-dark rounded border border-secondary border-opacity-25">
+                        <strong class="text-warning">vw_booking_details</strong>
+                        <div class="font-xs text-muted">Multi-table join (Users, Shows, Movies, Cinemas, Seats, Payments) generating complete digital receipts.</div>
+                    </div>
+                    <div class="p-2 bg-dark rounded border border-secondary border-opacity-25">
+                        <strong class="text-warning">vw_cinema_revenue</strong>
+                        <div class="font-xs text-muted">Grouping aggregation calculating gross sales and total tickets sold per multiplex.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Procedures -->
+        <div class="col-lg-4">
+            <div class="card bg-card border-secondary border-opacity-25 rounded-4 p-4 h-100 shadow-sm">
+                <h6 class="fw-bold text-light font-brand mb-3">
+                    <i class="fa-solid fa-gears text-info me-2"></i>Stored Procedures ({{ procedures|length }})
+                </h6>
+                <div class="d-flex flex-column gap-2 small">
+                    <div class="p-2 bg-dark rounded border border-secondary border-opacity-25">
+                        <strong class="text-info">sp_get_show_seats(p_show_id)</strong>
+                        <div class="font-xs text-muted">Computes the full seat layout grid, prices, and <code>is_booked</code> status via left outer join with confirmed bookings.</div>
+                    </div>
+                    <div class="p-2 bg-dark rounded border border-secondary border-opacity-25">
+                        <strong class="text-info">sp_cancel_booking(p_id, p_uid)</strong>
+                        <div class="font-xs text-muted">Performs transactional cancellation with security ownership validation.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Triggers -->
+        <div class="col-lg-4">
+            <div class="card bg-card border-secondary border-opacity-25 rounded-4 p-4 h-100 shadow-sm">
+                <h6 class="fw-bold text-light font-brand mb-3">
+                    <i class="fa-solid fa-bolt text-danger me-2"></i>Database Triggers ({{ triggers|length }})
+                </h6>
+                <div class="d-flex flex-column gap-2 small">
+                    <div class="p-2 bg-dark rounded border border-secondary border-opacity-25">
+                        <strong class="text-danger">trg_after_booking_insert</strong>
+                        <div class="font-xs text-muted">Fires AFTER INSERT on <code>bookings</code> to record audit metadata into <code>audit_logs</code>.</div>
+                    </div>
+                    <div class="p-2 bg-dark rounded border border-secondary border-opacity-25">
+                        <strong class="text-danger">trg_after_booking_update</strong>
+                        <div class="font-xs text-muted">Fires AFTER UPDATE on <code>bookings</code>; automatically changes payment status to <code>REFUNDED</code> and logs event.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Viva Q&A Cheatsheet Section -->
+    <div id="viva-section" class="card bg-card border-secondary border-opacity-25 rounded-4 p-4 shadow-sm">
+        <h4 class="fw-bold text-light font-brand mb-4">
+            <i class="fa-solid fa-book-bookmark text-warning me-2"></i>College Viva Questions & DBMS Explanation Guide
+        </h4>
+
+        <div class="accordion accordion-flush" id="vivaAccordion">
+            
+            <div class="accordion-item bg-dark border-secondary border-opacity-25 text-light rounded-3 mb-2">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed bg-dark text-light font-brand" type="button" data-bs-toggle="collapse" data-bs-target="#viva1">
+                        1. How is this database normalized up to Third Normal Form (3NF)?
+                    </button>
+                </h2>
+                <div id="viva1" class="accordion-collapse collapse" data-bs-parent="#vivaAccordion">
+                    <div class="accordion-body small text-secondary">
+                        <ul>
+                            <li><strong>1NF:</strong> Every column contains atomic (indivisible) values. Seats and tickets are not stored as comma-separated strings inside a single booking column; they are split into the junction table <code>booking_seats</code>.</li>
+                            <li><strong>2NF:</strong> Meets 1NF and contains NO partial dependencies (all non-key attributes fully depend on the complete primary key). In <code>booking_seats</code> (composite PK or surrogate PK), the seat price and booking relationship strictly depend on the key.</li>
+                            <li><strong>3NF:</strong> Meets 2NF and contains NO transitive dependencies (\(X \to Y\) and \(Y \to Z\)). For example, cinema city is stored in <code>cinemas</code>, not redundantly copied into <code>shows</code> or <code>bookings</code>. Screen information references <code>cinema_id</code>, maintaining referential integrity.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item bg-dark border-secondary border-opacity-25 text-light rounded-3 mb-2">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed bg-dark text-light font-brand" type="button" data-bs-toggle="collapse" data-bs-target="#viva2">
+                        2. How does the system handle ACID properties and prevent Double Booking?
+                    </button>
+                </h2>
+                <div id="viva2" class="accordion-collapse collapse" data-bs-parent="#vivaAccordion">
+                    <div class="accordion-body small text-secondary">
+                        <ul>
+                            <li><strong>Atomicity:</strong> Ticket booking involves three tables (<code>bookings</code>, <code>booking_seats</code>, and <code>payments</code>). Either all three operations succeed together or, if any step fails, the entire transaction is rolled back via <code>conn.rollback()</code>.</li>
+                            <li><strong>Consistency:</strong> Foreign key constraints (<code>ON DELETE CASCADE</code>) and unique index <code>uk_screen_seat</code> ensure no phantom or duplicate seats can be created on a screen.</li>
+                            <li><strong>Isolation:</strong> When checking seat availability, the transaction applies row-level locking: <code>SELECT ... FOR UPDATE</code>. This forces concurrent booking requests to wait until the lock is released or encounter an immediate conflict, preventing race conditions.</li>
+                            <li><strong>Durability:</strong> Managed by MySQL's InnoDB storage engine using its write-ahead Redo Log (WAL) ensuring committed transactions survive server crashes.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item bg-dark border-secondary border-opacity-25 text-light rounded-3 mb-2">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed bg-dark text-light font-brand" type="button" data-bs-toggle="collapse" data-bs-target="#viva3">
+                        3. What is the difference between a Stored Procedure and a Function/View?
+                    </button>
+                </h2>
+                <div id="viva3" class="accordion-collapse collapse" data-bs-parent="#vivaAccordion">
+                    <div class="accordion-body small text-secondary">
+                        A <strong>View</strong> is a virtual table defined by a saved <code>SELECT</code> query without taking parameters (used here for <code>vw_active_shows</code> and <code>vw_cinema_revenue</code>). A <strong>Stored Procedure</strong> encapsulates business logic, takes <code>IN</code> and <code>OUT</code> parameters, can execute multiple queries, control transactions (<code>COMMIT</code>/<code>ROLLBACK</code>), and is precompiled inside the MySQL database server for maximum performance.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item bg-dark border-secondary border-opacity-25 text-light rounded-3 mb-2">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed bg-dark text-light font-brand" type="button" data-bs-toggle="collapse" data-bs-target="#viva4">
+                        4. What are Database Triggers and how are they used here?
+                    </button>
+                </h2>
+                <div id="viva4" class="accordion-collapse collapse" data-bs-parent="#vivaAccordion">
+                    <div class="accordion-body small text-secondary">
+                        A <strong>Trigger</strong> is a special stored program that executes automatically in response to specific events (<code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>) on a table. In our system:
+                        <ul>
+                            <li><code>trg_after_booking_insert</code> logs newly confirmed ticket reservations directly into the <code>audit_logs</code> table.</li>
+                            <li><code>trg_after_booking_update</code> monitors booking cancellations and automatically triggers payment status update to <code>REFUNDED</code> in the <code>payments</code> table.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById("btnRunConcurrency").addEventListener("click", function() {
+    const btn = this;
+    const output = document.getElementById("concurrencyOutput");
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Running Race Condition...';
+    output.innerHTML = '⚡ Spawning 2 simultaneous threads against Seat 1 for Show 1 with SELECT ... FOR UPDATE...';
+
+    fetch("{{ url_for('dbms.simulate_concurrency') }}", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ show_id: 1, seat_id: 1 })
+    })
+    .then(res => res.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-play me-1"></i> Run Live Concurrency Test';
+        
+        let html = '<div class="fw-bold text-warning mb-2"><i class="fa-solid fa-check-double text-success me-1"></i> Concurrency Execution Result:</div>';
+        data.concurrency_test_results.forEach(res => {
+            const badgeClass = res.status === 'SUCCESS' ? 'badge bg-success' : 'badge bg-danger';
+            html += `<div class="mb-2 p-2 bg-black bg-opacity-40 rounded border border-secondary border-opacity-25">
+                <span class="${badgeClass} me-2">${res.status}</span>
+                <strong>${res.user}</strong>: <span class="text-secondary">${res.reason}</span>
+            </div>`;
+        });
+        output.innerHTML = html;
+    })
+    .catch(err => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-play me-1"></i> Run Live Concurrency Test';
+        output.innerHTML = `<span class="text-danger">Test execution failed: ${err}</span>`;
+    });
+});
+</script>
+{% endblock %}

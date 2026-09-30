@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In | PVR INOX Privilege{% endblock %}
+
+{% block content %}
+<div class="container py-5 d-flex justify-content-center">
+    <div class="card bg-card border border-warning border-opacity-25 rounded-4 p-4 p-md-5 shadow-2xl" style="max-width: 480px; width: 100%;">
+        
+        <div class="text-center mb-4">
+            <div class="d-inline-flex mb-3">
+                <div class="pvr-logo-box">
+                    <span class="pvr-brand-text">PVR</span>
+                    <span class="pvr-sub-brand">INOX</span>
+                </div>
+            </div>
+            <h3 class="fw-bold text-light font-brand">Sign In to PVR Privilege</h3>
+            <p class="text-muted small">Access your movie tickets, loyalty rewards & fast checkout</p>
+        </div>
+
+        <form action="{{ url_for('auth.login', next=request.args.get('next')) }}" method="POST">
+            <div class="mb-3">
+                <label class="form-label text-warning small fw-semibold">Email Address</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-dark border-secondary border-opacity-50 text-muted"><i class="fa-solid fa-envelope"></i></span>
+                    <input type="email" name="email" id="loginEmail" required class="form-control bg-dark text-light border-secondary border-opacity-50" placeholder="name@example.com">
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label text-warning small fw-semibold">Password</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-dark border-secondary border-opacity-50 text-muted"><i class="fa-solid fa-lock"></i></span>
+                    <input type="password" name="password" id="loginPassword" required class="form-control bg-dark text-light border-secondary border-opacity-50" placeholder="••••••••">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-gold w-100 rounded-pill py-2 fw-bold font-brand shadow mb-3">
+                Sign In
+            </button>
+        </form>
+
+        <!-- Quick 1-Click Credentials -->
+        <div class="pt-3 border-top border-secondary border-opacity-25 text-center">
+            <span class="font-xs text-muted d-block mb-2 text-uppercase">1-Click Fast Fill</span>
+            <div class="d-flex gap-2 justify-content-center">
+                <button type="button" class="btn btn-outline-warning btn-sm rounded-pill font-xs px-3" onclick="fillCreds('john@example.com', 'User@123')">
+                    <i class="fa-solid fa-crown me-1"></i> Customer Login
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill font-xs px-3 text-light" onclick="fillCreds('admin@cinema.com', 'Admin@123')">
+                    <i class="fa-solid fa-shield-halved me-1"></i> Admin Login
+                </button>
+            </div>
+        </div>
+
+        <div class="mt-4 text-center text-muted small">
+            Don't have an account? <a href="{{ url_for('auth.register') }}" class="text-warning text-decoration-none fw-bold">Join PVR Privilege</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function fillCreds(email, password) {
+    document.getElementById("loginEmail").value = email;
+    document.getElementById("loginPassword").value = password;
+}
+</script>
+{% endblock %}

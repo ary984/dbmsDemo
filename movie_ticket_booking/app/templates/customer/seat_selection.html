@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+
+{% block title %}Select Seats - {{ show.movie_title }} | PVR INOX{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- Top Navigation & Show Overview -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center bg-card p-3 p-md-4 rounded-4 border border-warning border-opacity-25 mb-4 shadow-lg gap-3">
+        <div class="d-flex align-items-center gap-3">
+            <img src="{{ show.poster_url }}" alt="{{ show.movie_title }}" class="rounded-3 object-fit-cover d-none d-sm-block shadow-sm" style="width: 55px; height: 75px;" onerror="this.src='https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=600&q=80'">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="pvr-avatar-badge text-warning"><i class="fa-solid fa-crown"></i></span>
+                    <h4 class="fw-bold text-light m-0 font-brand">{{ show.movie_title }}</h4>
+                </div>
+                <div class="text-muted small">
+                    <span class="text-light fw-semibold"><i class="fa-solid fa-location-dot text-danger me-1"></i>{{ show.cinema_name }}</span>
+                    <span class="badge bg-dark border border-warning border-opacity-50 text-warning ms-1 font-xs">{{ show.screen_name }}</span>
+                    <span class="mx-2">•</span>
+                    <span><i class="fa-regular fa-clock text-warning me-1"></i>{{ show.start_time.strftime('%a, %d %b | %I:%M %p') }}</span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <a href="{{ url_for('customer.movie_detail', movie_id=show.movie_id) }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <i class="fa-solid fa-arrow-left me-1"></i> Change Showtime
+            </a>
+        </div>
+    </div>
+
+    <!-- Seat Matrix & Summary Container -->
+    <div class="row g-4">
+        <!-- Center: Interactive Seat Layout -->
+        <div class="col-lg-8">
+            <div class="card bg-card border-secondary border-opacity-25 rounded-4 p-4 text-center shadow-2xl">
+                
+                <!-- Cinema Screen Indicator with Luminous Beam -->
+                <div class="screen-container">
+                    <div class="screen-curved"></div>
+                    <div class="screen-beam"></div>
+                    <div class="screen-label mt-2">
+                        <i class="fa-solid fa-film me-1"></i> ALL EYES THIS WAY • SCREEN
+                    </div>
+                </div>
+
+                <!-- Seat Grid -->
+                <div class="seat-grid my-4" id="seatGrid">
+                    {% for row_label, row_seats in seat_rows.items() %}
+                    
+                    {# Tier Separator Header on row switches #}
+                    {% if loop.first and row_seats[0].seat_tier == 'RECLINER' %}
+                    <div class="seat-tier-header">
+                        <span><i class="fa-solid fa-couch me-1"></i> PVR RECLINER LOUNGERS</span>
+                        <span class="badge bg-dark border border-warning text-warning font-xs">₹400 / Seat</span>
+                    </div>
+                    {% elif loop.index == 2 and row_seats[0].seat_tier == 'GOLD' %}
+                    <div class="seat-tier-header">
+                        <span><i class="fa-solid fa-crown me-1"></i> PVR PRIME CLUB</span>
+                        <span class="badge bg-dark border border-warning text-warning font-xs">₹250 / Seat</span>
+                    </div>
+                    {% elif loop.index == 3 and row_seats[0].seat_tier == 'SILVER' %}
+                    <div class="seat-tier-header">
+                        <span><i class="fa-solid fa-chair me-1"></i> PVR CLASSIC</span>
+                        <span class="badge bg-dark border border-warning text-warning font-xs">₹150 / Seat</span>
+                    </div>
+                    {% endif %}
+
+                    <div class="seat-row">
+                        <div class="row-label">{{ row_label }}</div>
+                        {% for seat in row_seats %}
+                        <div class="seat tier-{{ seat.seat_tier|lower }} {% if seat.is_booked %}booked{% endif %}"
+                             data-seat-id="{{ seat.seat_id }}"
+                             data-seat-number="{{ seat.seat_number }}"
+                             data-tier="{{ seat.seat_tier }}"
+                             data-price="{{ seat.calculated_price }}"
+                             title="{{ seat.seat_number }} ({{ seat.seat_tier }} - ${{ seat.calculated_price }})">
+                            {{ seat.seat_col }}
+                        </div>
+                        {% endfor %}
+                        <div class="row-label">{{ row_label }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- PVR Seating Legend -->
+                <div class="d-flex flex-wrap justify-content-center align-items-center gap-4 pt-4 border-top border-secondary border-opacity-25 small text-muted">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="seat tier-recliner" style="width: 22px; height: 20px; cursor: default;"></span>
+                        <span class="text-light">Recliner</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="seat tier-gold" style="width: 20px; height: 18px; cursor: default;"></span>
+                        <span class="text-light">Prime Club</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="seat tier-silver" style="width: 20px; height: 18px; cursor: default;"></span>
+                        <span class="text-light">Classic</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="seat selected" style="width: 20px; height: 18px; cursor: default;"></span>
+                        <span class="text-success fw-bold">Selected</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="seat booked" style="width: 20px; height: 18px; cursor: default;"></span>
+                        <span>Sold Out</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Right Side: Booking Summary & Payment Trigger -->
+        <div class="col-lg-4">
+            <div class="card bg-card border border-warning border-opacity-25 rounded-4 p-4 sticky-top shadow-2xl" style="top: 100px;">
+                <h5 class="fw-bold text-light border-bottom border-secondary border-opacity-25 pb-3 mb-3 font-brand">
+                    <i class="fa-solid fa-receipt text-warning me-2"></i>Booking Summary
+                </h5>
+
+                <div class="mb-3">
+                    <div class="text-muted small mb-1">Selected Seats:</div>
+                    <div id="selectedSeatsList" class="fw-bold text-warning fs-5">None selected</div>
+                </div>
+
+                <div class="d-flex justify-content-between text-muted small mb-2">
+                    <span>Ticket Quantity:</span>
+                    <span id="ticketCount" class="text-light fw-bold">0</span>
+                </div>
+
+                <div class="d-flex justify-content-between text-muted small mb-2">
+                    <span>Seat Base Fare:</span>
+                    <span id="seatBaseFare" class="text-light fw-semibold">$0.00</span>
+                </div>
+
+                <!-- Gourmet F&B Snack Addon Option -->
+                <div class="fnb-addon-box my-3">
+                    <div class="form-check d-flex align-items-center gap-2 m-0">
+                        <input class="form-check-input mt-0" type="checkbox" id="fnbComboCheck" value="15">
+                        <label class="form-check-label text-light small cursor-pointer" for="fnbComboCheck">
+                            <strong class="text-warning"><i class="fa-solid fa-popcorn me-1"></i> Add Jumbo Popcorn Combo</strong>
+                            <div class="font-xs text-muted">Caramel/Cheese Popcorn + 2 Large Pepsis (+$15.00)</div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between text-muted small mb-3">
+                    <span>Convenience Fee & Taxes:</span>
+                    <span class="text-success fw-bold">FREE (Complimentary)</span>
+                </div>
+
+                <hr class="border-secondary border-opacity-25">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <span class="fs-5 fw-bold text-light font-brand">Total Payable:</span>
+                    <span id="totalPrice" class="fs-3 fw-extrabold text-warning font-brand">$0.00</span>
+                </div>
+
+                <button id="btnProceedPayment" class="btn btn-gold btn-lg w-100 rounded-pill fw-bold py-3 shadow" disabled data-bs-toggle="modal" data-bs-target="#paymentModal">
+                    <i class="fa-solid fa-credit-card me-2"></i> Proceed to Pay
+                </button>
+
+                <div class="mt-3 text-center">
+                    <span class="font-xs text-muted">
+                        <i class="fa-solid fa-shield-halved text-success me-1"></i> 100% Safe & Secure 256-Bit Encrypted Checkout
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- PVR FastPay Payment Modal -->
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-card border border-warning border-opacity-50 text-light rounded-4 shadow-2xl">
+            <div class="modal-header border-secondary border-opacity-25">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="pvr-avatar-badge text-warning"><i class="fa-solid fa-crown"></i></div>
+                    <h5 class="modal-title font-brand fw-bold text-light m-0">PVR FastPay Checkout</h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            
+            <form action="{{ url_for('customer.book_tickets', show_id=show.show_id) }}" method="POST" id="bookingForm">
+                <div class="modal-body p-4">
+                    <div id="hiddenInputsContainer"></div>
+
+                    <!-- PVR Cinema Summary Banner in Modal -->
+                    <div class="p-3 bg-dark bg-opacity-75 rounded-3 border border-secondary border-opacity-25 mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="fw-bold text-light small">{{ show.movie_title }}</span>
+                            <span class="badge bg-warning text-dark font-xs fw-bold">{{ show.screen_name }}</span>
+                        </div>
+                        <div class="text-muted font-xs">{{ show.cinema_name }} • {{ show.start_time.strftime('%I:%M %p') }}</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-warning small fw-bold">SELECT PAYMENT METHOD</label>
+                        <div class="d-flex flex-column gap-2">
+                            <label class="p-3 rounded-3 border border-secondary border-opacity-50 d-flex align-items-center gap-3 cursor-pointer bg-dark hover-gold">
+                                <input type="radio" name="payment_method" value="UPI" checked class="form-check-input">
+                                <div>
+                                    <div class="fw-bold text-light"><i class="fa-solid fa-qrcode text-warning me-2"></i>UPI FastPay (QR / ID)</div>
+                                    <div class="font-xs text-muted">Google Pay, PhonePe, Paytm, BHIM</div>
+                                </div>
+                            </label>
+                            <label class="p-3 rounded-3 border border-secondary border-opacity-50 d-flex align-items-center gap-3 cursor-pointer bg-dark hover-gold">
+                                <input type="radio" name="payment_method" value="CARD" class="form-check-input">
+                                <div>
+                                    <div class="fw-bold text-light"><i class="fa-solid fa-credit-card text-info me-2"></i>Credit / Debit Card</div>
+                                    <div class="font-xs text-muted">Visa, MasterCard, RuPay, Amex</div>
+                                </div>
+                            </label>
+                            <label class="p-3 rounded-3 border border-secondary border-opacity-50 d-flex align-items-center gap-3 cursor-pointer bg-dark hover-gold">
+                                <input type="radio" name="payment_method" value="NETBANKING" class="form-check-input">
+                                <div>
+                                    <div class="fw-bold text-light"><i class="fa-solid fa-building-columns text-success me-2"></i>Net Banking</div>
+                                    <div class="font-xs text-muted">HDFC, ICICI, SBI, Axis, Kotak</div>
+                                </div>
+                            </label>
+                            <label class="p-3 rounded-3 border border-secondary border-opacity-50 d-flex align-items-center gap-3 cursor-pointer bg-dark hover-gold">
+                                <input type="radio" name="payment_method" value="PRIVILEGE_POINTS" class="form-check-input">
+                                <div>
+                                    <div class="fw-bold text-light"><i class="fa-solid fa-gift text-danger me-2"></i>PVR Gift Card / Privilege Points</div>
+                                    <div class="font-xs text-muted">Redeem loyalty points or gift voucher</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-black bg-opacity-60 rounded-3 border border-warning border-opacity-30 d-flex justify-content-between align-items-center">
+                        <span class="text-muted small">Total Payable Amount:</span>
+                        <span id="modalTotalAmount" class="fs-4 fw-extrabold text-warning font-brand">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-secondary border-opacity-25 p-3">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-gold rounded-pill px-5 fw-bold font-brand shadow">
+                        <i class="fa-solid fa-lock me-2"></i> Confirm & Pay
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const seats = document.querySelectorAll(".seat:not(.booked)");
+    const selectedSeatsList = document.getElementById("selectedSeatsList");
+    const ticketCount = document.getElementById("ticketCount");
+    const seatBaseFare = document.getElementById("seatBaseFare");
+    const totalPrice = document.getElementById("totalPrice");
+    const modalTotalAmount = document.getElementById("modalTotalAmount");
+    const btnProceed = document.getElementById("btnProceedPayment");
+    const hiddenInputsContainer = document.getElementById("hiddenInputsContainer");
+    const fnbComboCheck = document.getElementById("fnbComboCheck");
+
+    let selectedSeats = [];
+
+    seats.forEach(seat => {
+        seat.addEventListener("click", () => {
+            const seatId = seat.getAttribute("data-seat-id");
+            const seatNum = seat.getAttribute("data-seat-number");
+            const price = parseFloat(seat.getAttribute("data-price"));
+
+            if (seat.classList.contains("selected")) {
+                seat.classList.remove("selected");
+                selectedSeats = selectedSeats.filter(s => s.id !== seatId);
+            } else {
+                seat.classList.add("selected");
+                selectedSeats.push({ id: seatId, number: seatNum, price: price });
+            }
+
+            updateSummary();
+        });
+    });
+
+    if (fnbComboCheck) {
+        fnbComboCheck.addEventListener("change", updateSummary);
+    }
+
+    function updateSummary() {
+        if (selectedSeats.length === 0) {
+            selectedSeatsList.textContent = "None selected";
+            ticketCount.textContent = "0";
+            seatBaseFare.textContent = "$0.00";
+            totalPrice.textContent = "$0.00";
+            modalTotalAmount.textContent = "$0.00";
+            btnProceed.disabled = true;
+            hiddenInputsContainer.innerHTML = "";
+            return;
+        }
+
+        const seatNumbers = selectedSeats.map(s => s.number).sort().join(", ");
+        let baseTotal = selectedSeats.reduce((sum, s) => sum + s.price, 0);
+        let fnbCost = (fnbComboCheck && fnbComboCheck.checked) ? parseFloat(fnbComboCheck.value) : 0;
+        let grandTotal = (baseTotal + fnbCost).toFixed(2);
+
+        selectedSeatsList.textContent = seatNumbers;
+        ticketCount.textContent = selectedSeats.length;
+        seatBaseFare.textContent = `$${baseTotal.toFixed(2)}`;
+        totalPrice.textContent = `$${grandTotal}`;
+        modalTotalAmount.textContent = `$${grandTotal}`;
+        btnProceed.disabled = false;
+
+        // Generate hidden inputs for form submission
+        hiddenInputsContainer.innerHTML = selectedSeats.map(s => 
+            `<input type="hidden" name="seat_ids" value="${s.id}">`
+        ).join("");
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}{{ movie.title }} - Showtimes & Tickets | PVR INOX{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- Breadcrumb -->
+    <nav class="mb-4 small">
+        <a href="{{ url_for('customer.index') }}" class="text-muted text-decoration-none hover-gold">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back to All Movies
+        </a>
+    </nav>
+
+    <!-- Movie Banner & Details Card -->
+    <div class="card bg-card border border-warning border-opacity-25 rounded-4 overflow-hidden mb-5 shadow-2xl">
+        <div class="row g-0">
+            <div class="col-md-4 col-lg-3">
+                <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="img-fluid w-100 h-100 object-fit-cover" style="min-height: 400px;" onerror="this.src='https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=600&q=80'">
+            </div>
+            <div class="col-md-8 col-lg-9 p-4 p-md-5 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                        <span class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold font-xs">U/A 16+</span>
+                        <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50 px-3 py-1 rounded-pill font-xs fw-bold">{{ movie.genre }}</span>
+                        <span class="badge bg-dark border border-warning border-opacity-50 text-warning px-3 py-1 rounded-pill font-xs fw-bold">
+                            <i class="fa-solid fa-star text-warning me-1"></i>{{ movie.rating }} / 10 (PVR Critics)
+                        </span>
+                        <span class="badge bg-secondary bg-opacity-50 px-3 py-1 rounded-pill text-uppercase font-xs">{{ movie.language }}</span>
+                    </div>
+
+                    <h1 class="display-5 fw-extrabold text-light mb-3 font-brand">{{ movie.title }}</h1>
+                    
+                    <div class="d-flex flex-wrap gap-4 text-muted small mb-4">
+                        <span><i class="fa-regular fa-clock me-1 text-warning"></i><strong>Duration:</strong> {{ movie.duration_mins }} Mins</span>
+                        <span><i class="fa-solid fa-film me-1 text-warning"></i><strong>Formats:</strong> 2D, 3D, IMAX with Laser, 4DX</span>
+                        <span><i class="fa-regular fa-calendar me-1 text-warning"></i><strong>Release:</strong> {{ movie.release_date or 'Now In Theaters' }}</span>
+                    </div>
+
+                    <h6 class="text-warning fw-bold text-uppercase small tracking-wide mb-2">SYNOPSIS</h6>
+                    <p class="text-secondary leading-relaxed mb-4" style="line-height: 1.7;">
+                        {{ movie.description }}
+                    </p>
+                </div>
+
+                <div class="d-flex flex-wrap align-items-center gap-3 pt-3 border-top border-secondary border-opacity-25">
+                    {% if movie.trailer_url %}
+                    <a href="{{ movie.trailer_url }}" target="_blank" class="btn btn-outline-light rounded-pill px-4">
+                        <i class="fa-solid fa-circle-play me-2 text-danger"></i> Watch Trailer
+                    </a>
+                    {% endif %}
+                    <a href="#showtimes-section" class="btn btn-gold rounded-pill px-4 fw-bold shadow">
+                        <i class="fa-solid fa-ticket me-2"></i> Select Showtimes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Showtimes Section -->
+    <div id="showtimes-section">
+        
+        <!-- Date Selector Pills -->
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+            <div>
+                <h3 class="fw-bold font-brand text-light m-0"><i class="fa-solid fa-location-dot text-danger me-2"></i>Select Cinema & Showtime</h3>
+                <p class="text-muted small m-0">Choose your preferred PVR INOX multiplex and audi format</p>
+            </div>
+            
+            <div class="d-flex gap-2 overflow-x-auto pb-2">
+                <button class="btn btn-gold btn-sm rounded-pill px-3 fw-bold">
+                    <span class="d-block font-xs opacity-75">TODAY</span>
+                    <span>30 Sep</span>
+                </button>
+                <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 text-light">
+                    <span class="d-block font-xs opacity-75">TOMORROW</span>
+                    <span>01 Oct</span>
+                </button>
+                <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 text-light">
+                    <span class="d-block font-xs opacity-75">FRI</span>
+                    <span>02 Oct</span>
+                </button>
+                <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 text-light">
+                    <span class="d-block font-xs opacity-75">SAT</span>
+                    <span>03 Oct</span>
+                </button>
+            </div>
+        </div>
+
+        {% if cinemas %}
+            <div class="d-flex flex-column gap-4">
+                {% for c in cinemas %}
+                <div class="card bg-card border-secondary border-opacity-25 rounded-4 p-4 shadow-sm">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center border-bottom border-secondary border-opacity-25 pb-3 mb-3 gap-2">
+                        <div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="pvr-avatar-badge text-warning"><i class="fa-solid fa-crown"></i></span>
+                                <h5 class="fw-bold text-light m-0 font-brand">{{ c.cinema_name }}</h5>
+                            </div>
+                            <span class="text-muted small ms-4 ps-2">{{ c.address }}, {{ c.city }}</span>
+                        </div>
+                        
+                        <div class="d-flex gap-2 small">
+                            <span class="pvr-format-badge"><i class="fa-solid fa-qrcode text-warning me-1"></i> M-Ticket</span>
+                            <span class="pvr-format-badge"><i class="fa-solid fa-burger text-danger me-1"></i> F&B In-Seat</span>
+                            <span class="pvr-format-badge"><i class="fa-solid fa-wheelchair text-info me-1"></i> Wheelchair</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-3">
+                        {% for s in c.shows %}
+                        <a href="{{ url_for('customer.select_seats', show_id=s.show_id) }}" class="showtime-pill">
+                            <div class="show-time-text">
+                                {{ s.start_time.strftime('%I:%M %p') }}
+                            </div>
+                            <div class="small fw-semibold text-light mt-1">{{ s.screen_name }}</div>
+                            <div class="show-sound-text mt-1">
+                                <i class="fa-solid fa-volume-high me-1 text-warning"></i>{{ s.sound_system }}
+                            </div>
+                            {% if s.price_multiplier != 1.0 %}
+                            <span class="badge bg-warning bg-opacity-25 text-warning font-xs mt-2 d-block text-center">Prime Multiplier: {{ s.price_multiplier }}x</span>
+                            {% endif %}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-dark border-secondary p-5 text-center rounded-4 bg-card">
+                <i class="fa-solid fa-calendar-xmark fs-1 text-warning mb-3"></i>
+                <h4 class="text-light font-brand">No Upcoming Showtimes Scheduled</h4>
+                <p class="text-muted small">Show schedules for this movie will be updated shortly. Browse other blockbusters playing today.</p>
+                <a href="{{ url_for('customer.index') }}" class="btn btn-gold btn-sm rounded-pill px-4 mt-2 fw-bold">Explore Now Showing</a>
+            </div>
+        {% endif %}
+
+    </div>
+
+</div>
+{% endblock %}

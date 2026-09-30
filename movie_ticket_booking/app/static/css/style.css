@@ -1,0 +1,689 @@
+/* ==========================================================================
+   PVR INOX PREMIUM CINEMA DESIGN SYSTEM
+   Ultra-luxury cinematic experience with deep obsidian, brushed velvet,
+   imperial gold accents, and state-of-the-art theater aesthetics.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600;1,700&family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap');
+
+:root {
+    /* PVR INOX Luxury Theme Colors */
+    --pvr-bg:             #08080c;
+    --pvr-surface:        #0f0f16;
+    --pvr-card:           #14141f;
+    --pvr-card-hover:     #1a1a29;
+    --pvr-burgundy:       #801424;
+    --pvr-burgundy-dark:  #580d19;
+    --pvr-red:            #b81d24;
+    --pvr-crimson:        #e50914;
+    
+    /* Imperial Gold Accents */
+    --pvr-gold:           #d4a843;
+    --pvr-gold-light:     #f5d78e;
+    --pvr-gold-dark:      #9e7724;
+    --pvr-gold-glow:      rgba(212, 168, 67, 0.25);
+    
+    /* Secondary Accents */
+    --pvr-amber:          #f59e0b;
+    --pvr-cyan:           #06b6d4;
+    --pvr-emerald:        #10b981;
+    --pvr-violet:         #8b5cf6;
+    
+    /* Text & Neutral */
+    --pvr-text-main:      #f3f4f6;
+    --pvr-text-muted:     #9ca3af;
+    --pvr-border:         rgba(255, 255, 255, 0.08);
+    --pvr-border-gold:    rgba(212, 168, 67, 0.25);
+    
+    /* Gradients */
+    --grad-gold:          linear-gradient(135deg, #d4a843 0%, #fae19c 50%, #c5972d 100%);
+    --grad-gold-btn:      linear-gradient(135deg, #e5a93c 0%, #c58f23 100%);
+    --grad-burgundy:      linear-gradient(135deg, #801424 0%, #b81d24 100%);
+    --grad-surface:       linear-gradient(180deg, #12121d 0%, #0a0a10 100%);
+    --grad-hero:          linear-gradient(135deg, #100b14 0%, #171120 40%, #0c0d15 100%);
+}
+
+/* ================== GLOBAL STYLES ================== */
+body.pvr-body {
+    background-color: var(--pvr-bg);
+    color: var(--pvr-text-main);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.01em;
+}
+
+::selection {
+    background: var(--pvr-gold);
+    color: #000;
+}
+
+.font-brand {
+    font-family: 'Playfair Display', Georgia, serif;
+    letter-spacing: 0.01em;
+}
+
+.font-xs {
+    font-size: 0.72rem;
+}
+
+.min-vh-80 {
+    min-height: 80vh;
+}
+
+.tracking-wide {
+    letter-spacing: 0.08em;
+}
+
+/* ================== TOP PRIVILEGE BAR ================== */
+.pvr-topbar {
+    background: #050508;
+    font-size: 0.78rem;
+}
+
+.pvr-city-badge {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 2px 10px;
+    border-radius: 20px;
+    color: var(--pvr-text-main);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pvr-city-badge:hover {
+    border-color: var(--pvr-gold);
+    color: var(--pvr-gold);
+}
+
+.hover-gold:hover {
+    color: var(--pvr-gold) !important;
+}
+
+/* ================== LOGO & BRANDING ================== */
+.pvr-logo-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #1c1810 0%, #0d0c0a 100%);
+    border: 1px solid rgba(230, 177, 54, 0.4);
+    padding: 6px 14px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(212, 168, 67, 0.1);
+}
+
+.pvr-brand-text {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 1.35rem;
+    letter-spacing: 0.05em;
+    background: var(--grad-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.pvr-sub-brand {
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    color: #fff;
+    padding-left: 6px;
+    border-left: 1.5px solid var(--pvr-gold);
+}
+
+.pvr-avatar-badge {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(212, 168, 67, 0.15);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    border: 1px solid rgba(212, 168, 67, 0.4);
+}
+
+/* ================== GLASS NAVBAR ================== */
+.bg-glass {
+    background: rgba(8, 8, 12, 0.94) !important;
+    backdrop-filter: blur(20px) saturate(1.3);
+    -webkit-backdrop-filter: blur(20px) saturate(1.3);
+    border-bottom: 1px solid rgba(212, 168, 67, 0.12) !important;
+}
+
+.navbar .nav-link {
+    font-weight: 500;
+    font-size: 0.92rem;
+    color: #cbd5e1 !important;
+    transition: all 0.25s ease;
+    position: relative;
+    padding: 0.5rem 0.8rem !important;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link.active {
+    color: var(--pvr-gold-light) !important;
+}
+
+.navbar .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 15%;
+    width: 70%;
+    height: 2px;
+    background: var(--grad-gold);
+    border-radius: 2px;
+}
+
+/* ================== BUTTONS & CONTROLS ================== */
+.btn-gold {
+    background: var(--grad-gold-btn) !important;
+    color: #0b0b0e !important;
+    border: none !important;
+    box-shadow: 0 4px 18px rgba(212, 168, 67, 0.3);
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.btn-gold:hover {
+    background: linear-gradient(135deg, #f3bb54 0%, #d89f2d 100%) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(212, 168, 67, 0.45);
+    color: #000 !important;
+}
+
+.btn-danger, .btn-pvr-red {
+    background: var(--grad-burgundy) !important;
+    border: none !important;
+    color: #fff !important;
+    box-shadow: 0 4px 18px rgba(184, 29, 36, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover, .btn-pvr-red:hover {
+    background: linear-gradient(135deg, #9a172b 0%, #d6242c 100%) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(229, 9, 20, 0.45);
+    color: #fff !important;
+}
+
+.btn-outline-warning {
+    border-color: var(--pvr-gold) !important;
+    color: var(--pvr-gold-light) !important;
+}
+
+.btn-outline-warning:hover {
+    background: rgba(212, 168, 67, 0.12) !important;
+    color: #fff !important;
+    border-color: var(--pvr-gold-light) !important;
+}
+
+.btn-outline-secondary {
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: #cbd5e1 !important;
+}
+
+.btn-outline-secondary:hover {
+    border-color: var(--pvr-gold) !important;
+    background: rgba(212, 168, 67, 0.08) !important;
+    color: var(--pvr-gold) !important;
+}
+
+/* ================== CARDS & SURFACES ================== */
+.bg-card, .card.bg-card {
+    background-color: var(--pvr-card) !important;
+    border: 1px solid var(--pvr-border) !important;
+}
+
+/* PVR Spotlight Banner */
+.pvr-spotlight {
+    background: var(--grad-hero);
+    border: 1px solid rgba(212, 168, 67, 0.15);
+    border-radius: 24px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.pvr-spotlight::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(212, 168, 67, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.pvr-spotlight::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(128, 20, 36, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* ================== MOVIE POSTER CARDS ================== */
+.movie-card {
+    background: var(--pvr-card);
+    border: 1px solid var(--pvr-border);
+    border-radius: 18px;
+    overflow: hidden;
+    transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1), 
+                box-shadow 0.4s ease, 
+                border-color 0.4s ease;
+    position: relative;
+}
+
+.movie-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--grad-gold);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 3;
+}
+
+.movie-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(212, 168, 67, 0.4);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.65), 0 0 35px rgba(212, 168, 67, 0.1);
+}
+
+.movie-card:hover::before {
+    opacity: 1;
+}
+
+.movie-poster-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2/3;
+    overflow: hidden;
+    background: #000;
+}
+
+.movie-poster-wrap::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 45%;
+    background: linear-gradient(to top, var(--pvr-card) 0%, transparent 100%);
+    pointer-events: none;
+}
+
+.movie-poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.movie-card:hover .movie-poster {
+    transform: scale(1.08);
+}
+
+.rating-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(10, 10, 15, 0.88);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(212, 168, 67, 0.5);
+    color: var(--pvr-gold-light);
+    font-weight: 700;
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 0.8rem;
+    z-index: 4;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.format-pill {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-weight: 700;
+    border-radius: 6px;
+    padding: 2px 8px;
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    z-index: 4;
+}
+
+/* ================== PVR FORMAT BADGES ================== */
+.pvr-format-badge {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    letter-spacing: 0.06em;
+}
+
+/* ================== AUDITORIUM SCREEN ================== */
+.screen-container {
+    perspective: 800px;
+    margin: 2.5rem 0 3.5rem 0;
+    position: relative;
+}
+
+.screen-curved {
+    height: 36px;
+    width: 82%;
+    margin: 0 auto;
+    background: linear-gradient(to bottom, rgba(212, 168, 67, 0.75) 0%, rgba(212, 168, 67, 0.08) 70%, transparent 100%);
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    box-shadow: 0 15px 50px rgba(212, 168, 67, 0.35);
+    transform: rotateX(-35deg);
+    border-top: 3px solid var(--pvr-gold-light);
+}
+
+.screen-beam {
+    width: 60%;
+    height: 60px;
+    margin: 0 auto;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.08), transparent);
+    clip-path: polygon(25% 0%, 75% 0%, 100% 100%, 0% 100%);
+    pointer-events: none;
+}
+
+.screen-label {
+    letter-spacing: 8px;
+    font-size: 0.72rem;
+    color: var(--pvr-gold);
+    text-transform: uppercase;
+    font-weight: 700;
+    opacity: 0.85;
+}
+
+/* ================== PVR SEAT MATRIX ================== */
+.seat-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+}
+
+.seat-tier-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--pvr-gold);
+    border-left: 3px solid var(--pvr-gold);
+    margin: 10px 0 4px 0;
+}
+
+.seat-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.row-label {
+    width: 28px;
+    font-weight: 700;
+    color: var(--pvr-text-muted);
+    font-size: 0.8rem;
+    text-align: center;
+    user-select: none;
+}
+
+.seat {
+    width: 38px;
+    height: 36px;
+    border-radius: 9px 9px 4px 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    user-select: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+}
+
+/* Tier: Silver / Classic */
+.seat.tier-silver {
+    background: linear-gradient(180deg, #252834 0%, #191b24 100%);
+    color: #b0b4c8;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Tier: Gold / Prime Club */
+.seat.tier-gold {
+    background: linear-gradient(180deg, #38301c 0%, #241e12 100%);
+    border-color: rgba(212, 168, 67, 0.4);
+    color: var(--pvr-gold-light);
+}
+
+/* Tier: Recliner Lounger */
+.seat.tier-recliner {
+    background: linear-gradient(180deg, #301728 0%, #1e0c19 100%);
+    border-color: rgba(212, 168, 67, 0.6);
+    color: #f7d6a5;
+    width: 44px;
+    height: 38px;
+    border-radius: 10px 10px 6px 6px;
+    box-shadow: inset 0 2px 5px rgba(212, 168, 67, 0.2);
+}
+
+.seat.tier-recliner::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 15%;
+    width: 70%;
+    height: 3px;
+    background: rgba(212, 168, 67, 0.4);
+    border-radius: 2px;
+}
+
+.seat:not(.booked):hover {
+    transform: scale(1.18);
+    box-shadow: 0 0 18px rgba(212, 168, 67, 0.45);
+    border-color: var(--pvr-gold-light);
+    z-index: 5;
+}
+
+.seat.selected {
+    background: linear-gradient(180deg, #10b981 0%, #059669 100%) !important;
+    border-color: #34d399 !important;
+    color: #ffffff !important;
+    transform: scale(1.14);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.6) !important;
+    z-index: 6;
+}
+
+.seat.booked {
+    background: #111118 !important;
+    border-color: transparent !important;
+    color: #333344 !important;
+    cursor: not-allowed;
+    text-decoration: line-through;
+    opacity: 0.3;
+}
+
+/* ================== PVR DIGITAL M-TICKET PASS ================== */
+.ticket-card {
+    background: linear-gradient(180deg, #171622 0%, #0e0e16 100%);
+    border-radius: 24px;
+    border: 1px solid rgba(212, 168, 67, 0.3);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(212, 168, 67, 0.1);
+}
+
+.ticket-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: var(--grad-gold);
+}
+
+.ticket-notch-left, .ticket-notch-right {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    background: var(--pvr-bg);
+    border-radius: 50%;
+    top: 60%;
+    transform: translateY(-50%);
+    z-index: 3;
+}
+
+.ticket-notch-left {
+    left: -16px;
+    box-shadow: inset -3px 0 6px rgba(0, 0, 0, 0.6);
+}
+
+.ticket-notch-right {
+    right: -16px;
+    box-shadow: inset 3px 0 6px rgba(0, 0, 0, 0.6);
+}
+
+.ticket-audi-badge {
+    background: linear-gradient(135deg, #241d10 0%, #151009 100%);
+    border: 1px solid rgba(212, 168, 67, 0.4);
+    border-radius: 12px;
+    padding: 8px 14px;
+    text-align: center;
+}
+
+/* ================== SHOWTIME CARDS & BUTTONS ================== */
+.pvr-cinema-card {
+    background: var(--pvr-card);
+    border: 1px solid var(--pvr-border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.pvr-cinema-card:hover {
+    border-color: rgba(212, 168, 67, 0.25);
+}
+
+.showtime-pill {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(212, 168, 67, 0.2);
+    border-radius: 14px;
+    padding: 0.9rem 1.2rem;
+    min-width: 155px;
+    text-decoration: none;
+    color: var(--pvr-text-main);
+    display: inline-block;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.showtime-pill:hover {
+    border-color: var(--pvr-gold);
+    background: rgba(212, 168, 67, 0.08);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(212, 168, 67, 0.15);
+    color: #fff;
+}
+
+.showtime-pill .show-time-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--pvr-gold);
+}
+
+.showtime-pill .show-sound-text {
+    font-size: 0.72rem;
+    color: var(--pvr-text-muted);
+}
+
+/* ================== F&B COMBO CARDS ================== */
+.fnb-addon-box {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed rgba(212, 168, 67, 0.3);
+    border-radius: 14px;
+    padding: 12px;
+    transition: all 0.25s ease;
+}
+
+.fnb-addon-box:hover {
+    background: rgba(212, 168, 67, 0.05);
+    border-color: var(--pvr-gold);
+}
+
+/* ================== MODALS & ALERTS ================== */
+.modal-content {
+    background: var(--pvr-card) !important;
+    border: 1px solid rgba(212, 168, 67, 0.25) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8) !important;
+}
+
+.modal-header, .modal-footer {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.alert-success {
+    background: rgba(16, 185, 129, 0.12) !important;
+    border: 1px solid rgba(16, 185, 129, 0.3) !important;
+    color: #6ee7b7 !important;
+}
+
+.alert-danger {
+    background: rgba(229, 9, 20, 0.12) !important;
+    border: 1px solid rgba(229, 9, 20, 0.3) !important;
+    color: #fca5a5 !important;
+}
+
+.alert-warning {
+    background: rgba(212, 168, 67, 0.12) !important;
+    border: 1px solid rgba(212, 168, 67, 0.35) !important;
+    color: var(--pvr-gold-light) !important;
+}
+
+/* ================== RESPONSIVE DESIGN ================== */
+@media (max-width: 768px) {
+    .seat {
+        width: 32px;
+        height: 30px;
+        font-size: 0.65rem;
+    }
+    .seat.tier-recliner {
+        width: 36px;
+        height: 32px;
+    }
+    .seat-row {
+        gap: 6px;
+    }
+    .screen-curved {
+        width: 95%;
+        height: 28px;
+    }
+}

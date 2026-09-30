@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Shows - Admin | CinePass{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold font-brand text-light m-0"><i class="fa-solid fa-calendar-days text-danger me-2"></i>Show Schedule Management</h3>
+            <p class="text-muted small m-0">Schedule and monitor showtimes across multiplex screens</p>
+        </div>
+        <button type="button" class="btn btn-danger rounded-pill px-4 fw-semibold" data-bs-toggle="modal" data-bs-target="#addShowModal">
+            <i class="fa-solid fa-plus me-1"></i> Schedule New Show
+        </button>
+    </div>
+
+    <div class="card bg-card border-secondary border-opacity-25 rounded-4 p-4 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle m-0 small">
+                <thead>
+                    <tr class="text-muted font-xs text-uppercase">
+                        <th>Show ID</th>
+                        <th>Movie</th>
+                        <th>Cinema & Screen</th>
+                        <th>Start Time</th>
+                        <th>Multiplier</th>
+                        <th>Seats Available</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in shows %}
+                    <tr>
+                        <td class="text-muted font-xs">#{{ s.show_id }}</td>
+                        <td>
+                            <strong class="text-light fs-6">{{ s.movie_title }}</strong>
+                            <div class="font-xs text-muted">{{ s.genre }}</div>
+                        </td>
+                        <td>
+                            <div>{{ s.cinema_name }}</div>
+                            <div class="font-xs text-info">{{ s.screen_name }}</div>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-warning font-brand">{{ s.start_time.strftime('%a, %d %b %Y') }}</div>
+                            <div class="font-xs text-muted">{{ s.start_time.strftime('%I:%M %p') }}</div>
+                        </td>
+                        <td>{{ s.price_multiplier }}x</td>
+                        <td>
+                            <span class="badge bg-dark border border-secondary text-success font-xs">
+                                {{ s.available_seats }} / {{ s.total_seats }} left
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge {% if s.show_status == 'SCHEDULED' %}bg-success bg-opacity-25 text-success{% else %}bg-secondary{% endif %} rounded-pill font-xs">
+                                {{ s.show_status }}
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            {% if s.show_status == 'SCHEDULED' %}
+                            <form action="{{ url_for('admin.cancel_show', show_id=s.show_id) }}" method="POST" onsubmit="return confirm('Cancel this show?');" class="d-inline">
+                                <button type="submit" class="btn btn-outline-warning btn-sm rounded-pill font-xs px-3">
+                                    Cancel Show
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- Schedule Show Modal -->
+<div class="modal fade" id="addShowModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-card border-secondary text-light rounded-4">
+            <div class="modal-header border-secondary border-opacity-25">
+                <h5 class="modal-title font-brand fw-bold"><i class="fa-solid fa-calendar-plus text-danger me-2"></i>Schedule Show</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ url_for('admin.add_show') }}" method="POST">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-semibold">Select Movie *</label>
+                        <select name="movie_id" required class="form-select bg-dark text-light border-secondary">
+                            {% for m in movies %}
+                            <option value="{{ m.movie_id }}">{{ m.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-semibold">Select Multiplex Screen *</label>
+                        <select name="screen_id" required class="form-select bg-dark text-light border-secondary">
+                            {% for sc in screens %}
+                            <option value="{{ sc.screen_id }}">{{ sc.cinema_name }} - {{ sc.screen_name }} ({{ sc.city }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label text-muted small fw-semibold">Start Time *</label>
+                            <input type="datetime-local" name="start_time" required class="form-control bg-dark text-light border-secondary">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-muted small fw-semibold">End Time *</label>
+                            <input type="datetime-local" name="end_time" required class="form-control bg-dark text-light border-secondary">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-semibold">Price Multiplier (Peak / Weekend)</label>
+                        <input type="number" step="0.05" min="0.5" max="3.0" name="price_multiplier" value="1.0" class="form-control bg-dark text-light border-secondary">
+                        <span class="font-xs text-muted">e.g. 1.15 for 15% weekend surcharge, 1.0 for standard pricing</span>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary border-opacity-25">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger rounded-pill px-5 fw-semibold font-brand">Schedule Show</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
